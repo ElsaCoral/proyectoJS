@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Balloon Burst Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden; /* Evita scrollbars */
+            cursor: crosshair;
+            background-color: rgb(149, 182, 227);
+        }
+        .balloon {
+            position: absolute;
+            width: 100px; 
+            height: 140px; 
+            font-size: 80px; 
+            cursor: crosshair;
+        }
+        @keyframes moveBalloon1 {
+            0%, 100% { top: 50%; left: 50%; }
+            25% { top: 10%; left: 20%; }
+            50% { top: 90%; left: 80%; }
+            75% { top: 70%; left: 30%; }
+        }
+        @keyframes moveBalloon2 {
+            0%, 100% { top: 60%; left: 20%; }
+            25% { top: 40%; left: 80%; }
+            50% { top: 20%; left: 50%; }
+            75% { top: 80%; left: 50%; }
+        }
+        @keyframes moveBalloon3 {
+            0%, 100% { top: 80%; left: 70%; }
+            25% { top: 70%; left: 30%; }
+            50% { top: 20%; left: 70%; }
+            75% { top: 90%; left: 10%; }
+        }
+        @keyframes explode {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(4); opacity: 0; }
+        }
+        .score-box {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="balloon" style="animation: moveBalloon1 8s infinite linear;">&#127880;</div>
+    <div class="balloon" style="animation: moveBalloon2 8s infinite linear;">&#127880;</div>
+    <div class="balloon" style="animation: moveBalloon3 8s infinite linear;">&#127880;</div>
+
+    <div class="score-box">
+        <p>Score: <span id="score">0</span></p>
+        <p>Accuracy: <span id="accuracy">0%</span></p>
+        <p>Missed Clicks: <span id="missed-clicks">0</span></p>
+    </div>
+
+    <script>
+        const balloons = document.querySelectorAll('.balloon');
+        let totalClicks = 0;
+        let successfulClicks = 0;
+        let missedClicks = 0;
+
+        // Funcion para actualizar resultado
+        function updateScoreAndAccuracy() {
+            document.getElementById('score').textContent = totalClicks;
+            missedClicks = totalClicks - successfulClicks; // Calculate missed clicks
+            const accuracy = ((successfulClicks / totalClicks) * 100) || 0;
+            document.getElementById('accuracy').textContent = accuracy.toFixed(2) + '%';
+            document.getElementById('missed-clicks').textContent = missedClicks;
+        }
+
+        // Funcion para manejar los clicks del globo
+        function handleBalloonClick(event) {
+            const balloon = event.target;
+            // Incrementar click totales
+            totalClicks++;
+            // Revisar si el click fue en un globo activo
+            if (!balloon.classList.contains('exploded')) {
+                // Incrementar los clicks certeros
+                successfulClicks++;
+                // Marcar el globo como explotado
+                balloon.classList.add('exploded');
+                // Reproducir animacion de explosion
+                balloon.style.animation = 'explode 2s forwards';
+
+                
+            }
+
+            // Actualizar Puntuacion
+            updateScoreAndAccuracy();
+        }
+
+        // Agregar event listener para explotar al globo cuando se de click
+        balloons.forEach(balloon => {
+            balloon.addEventListener('click', handleBalloonClick);
+        });
+
+        // Agregar event listener para contar los fallos
+        document.body.addEventListener('click', event => {
+            if (!event.target.classList.contains('balloon')) {
+                // Incrementar clicks fallados cuando no le atinas al globo
+                totalClicks++; // Incrementar clicks totales
+                updateScoreAndAccuracy();
+            }
+        });
+    </script>
+</body>
+</html>
